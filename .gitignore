@@ -1,4 +1,7 @@
+node_modules/
+.gitignore
 .editorconfig
 package.json
+package-lock.json
 sendNotify.js
 jdCookie.js
