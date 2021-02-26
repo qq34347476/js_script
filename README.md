@@ -37,6 +37,6 @@ pip install docker-compose==1.23.2
 
 [@chavyleung](https://github.com/chavyleung) 大佬的 `Env` 函数
 
-[@lxk0301](https://gitee.com/lxk0301) 框架
+[@lxk0301](https://gitee.com/lxk0301)
 
-[@i-chenzhe](https://github.com/i-chenzhe) 指导
+[@i-chenzhe](https://github.com/i-chenzhe)
