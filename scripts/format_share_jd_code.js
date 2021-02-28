@@ -123,7 +123,7 @@ if ($.isNode()) {
     }
   }
   showFormatMsg()
-  showMsg(notifyMsg);
+  await showMsg(notifyMsg);
 
   // 替换config.sh文件
   if ($.isNode() && replaceFlag === 'true') {
