@@ -25,7 +25,8 @@ cron "0 1 0/2 * *" script-path=https://gitee.com/qq34347476/quantumult-x/raw/mas
  */
 const $ = new Env('获取互助码并格式化/docker自动更新容器下所有账号互助码')
 const JD_API_HOST = 'https://api.m.jd.com/client.action'
-const updateMessage = '\n更新内容:修复^M 等乱码bug\n更新配置控制 config 里配置 自行配置是否需要 替换互助码'
+const updateMessage =
+  "\n更新内容:修复^M 等乱码bug\n更新配置变量REPLACE_SHARE_CODES 控制 config 里配置 自行配置是否需要 替换互助码";
 let cookiesArr = [],
   cookie = "",
   message,
@@ -1296,13 +1297,14 @@ const exportLog = () => {
 
         fs.writeFile(file, exportStr, { encoding: "utf8" }, (err) => {
           console.log(err);
-          notifyMsg += '更新配置失败'
         });
         notifyMsg += "更新互助码配置成功!\n";
       } else {
         notifyMsg += "未进行互助码配置!\n";
       }
     }
+    console.log(88888);
+    console.log(notifyMsg);
   })
 }
 
