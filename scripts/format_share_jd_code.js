@@ -25,7 +25,7 @@ cron "0 1 0/2 * *" script-path=https://gitee.com/qq34347476/quantumult-x/raw/mas
  */
 const $ = new Env('获取互助码并格式化/docker自动更新容器下所有账号互助码')
 const JD_API_HOST = 'https://api.m.jd.com/client.action'
-const updateMessage = '修复^M r 等乱码bug\n更新配置控制 config 里配置 自行配置是否需要 替换互助码'
+const updateMessage = '\n更新内容:修复^M 等乱码bug\n更新配置控制 config 里配置 自行配置是否需要 替换互助码'
 let cookiesArr = [],
   cookie = "",
   message,
@@ -131,7 +131,7 @@ if ($.isNode()) {
   } else {
     console.log('不是node环境 或 自动替换配置 未启用，不执行 替换互助码');
     notifyMsg +=
-      "自动替换配置 未启用，不执行 替换互助码\n\n请参考 https://github.com/qq34347476/js_script/wiki/format_share_jd_code 使用说明 更新 食用\n";
+      "自动替换配置 未启用\n请参考 https://github.com/qq34347476/js_script/wiki/format_share_jd_code 使用说明 更新 食用\n";
   }
   notifyMsg += updateMessage
   console.log(notifyMsg);
@@ -1292,21 +1292,15 @@ const exportLog = () => {
       console.log('读取文件成功')
       let dataArr = data.split('# format_share_jd_code')
       if (dataArr.length > 1) {
-        dataArr.splice(1, 1, exportStr)
-        exportStr = dataArr.join('# format_share_jd_code\n')
+        dataArr.splice(1, 1, exportStr);
+        exportStr = dataArr.join("# format_share_jd_code\n");
 
-        fs.writeFile(file, exportStr, { encoding: 'utf8' }, err => {
-          if (err) {
-            console.log(err)
-          } else {
-            notifyMsg += "更新docker配置互助码成功!\n";
-            console.log('更新docker配置互助码成功!')
-          }
-        })
+        fs.writeFile(file, exportStr, { encoding: "utf8" }, (err) => {
+          console.log(err);
+        });
+        notifyMsg += "更新互助码配置成功!\n";
       } else {
         notifyMsg += "未进行互助码配置!\n";
-        notifyMsg +=
-          "请参考 https://github.com/qq34347476/js_script/wiki/format_share_jd_code 使用说明 食用\n";
       }
     }
   })
