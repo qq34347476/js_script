@@ -25,6 +25,7 @@ cron "0 1 0/2 * *" script-path=https://gitee.com/qq34347476/quantumult-x/raw/mas
  */
 const $ = new Env('获取互助码并格式化/docker自动更新容器下所有账号互助码')
 const JD_API_HOST = 'https://api.m.jd.com/client.action'
+const updateMessage = '修复^M r 等乱码bug\n更新配置控制 config 里配置 自行配置是否需要 替换互助码'
 let cookiesArr = [],
   cookie = "",
   message,
@@ -132,6 +133,7 @@ if ($.isNode()) {
     notifyMsg +=
       "自动替换配置 未启用，不执行 替换互助码\n\n请参考 https://github.com/qq34347476/js_script/wiki/format_share_jd_code 使用说明 更新 食用\n";
   }
+  notifyMsg += updateMessage
   console.log(notifyMsg);
   showMsg(notifyMsg);
 })()
