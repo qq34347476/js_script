@@ -123,15 +123,17 @@ if ($.isNode()) {
     }
   }
   showFormatMsg()
-  await showMsg(notifyMsg);
 
   // 替换config.sh文件
   if ($.isNode() && replaceFlag === 'true') {
-    exportLog()
+    await exportLog()
   } else {
     console.log('不是node环境 或 自动替换配置 未启用，不执行 替换互助码');
-    notifyMsg += "自动替换配置 未启用，不执行 替换互助码\n";
+    notifyMsg +=
+      "自动替换配置 未启用，不执行 替换互助码\n\n请参考 https://github.com/qq34347476/js_script/wiki/format_share_jd_code 使用说明 更新 食用\n";
   }
+  console.log(notifyMsg);
+  showMsg(notifyMsg);
 })()
   .catch(e => {
     $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -1418,11 +1420,11 @@ function jsonParse(str) {
     }
   }
 }
-const showMsg = (msg) => {
+const showMsg = (notifyMsg) => {
   if ($.isNode()) {
-   notify.sendNotify(`docker自动更新容器下所有账号互助码`,msg);
+   notify.sendNotify(`docker自动更新容器下所有账号互助码`,notifyMsg);
   } else {
-    $.msg($.name,"",msg )
+    $.msg($.name, "", notifyMsg);
   }
 }
 // prettier-ignore
