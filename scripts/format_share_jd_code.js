@@ -134,7 +134,6 @@ if ($.isNode()) {
       "自动替换配置 未启用\n请参考 https://github.com/qq34347476/js_script/wiki/format_share_jd_code 使用说明 更新 食用\n";
   }
   notifyMsg += updateMessage
-  console.log(notifyMsg);
   showMsg(notifyMsg);
 })()
   .catch(e => {
@@ -1297,6 +1296,7 @@ const exportLog = () => {
 
         fs.writeFile(file, exportStr, { encoding: "utf8" }, (err) => {
           console.log(err);
+          notifyMsg += '更新配置失败'
         });
         notifyMsg += "更新互助码配置成功!\n";
       } else {
