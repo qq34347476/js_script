@@ -129,6 +129,8 @@ if ($.isNode()) {
   // 替换config.sh文件
   if ($.isNode() && replaceFlag === 'true') {
     await exportLog()
+    notifyMsg +=
+      "自动替换互助码配置";
   } else {
     console.log('不是node环境 或 自动替换配置 未启用，不执行 替换互助码');
     notifyMsg +=
@@ -1298,13 +1300,11 @@ const exportLog = () => {
         fs.writeFile(file, exportStr, { encoding: "utf8" }, (err) => {
           console.log(err);
         });
-        notifyMsg += "更新互助码配置成功!\n";
+        console.log('更新互助码配置成功');
       } else {
-        notifyMsg += "未进行互助码配置!\n";
+        console.log('未进行互助码配置');
       }
     }
-    console.log(88888);
-    console.log(notifyMsg);
   })
 }
 
