@@ -1,5 +1,6 @@
 [![Zhe's github stats](https://github-readme-stats.vercel.app/api?username=qq34347476)](https://github.com/anuraghazra/github-readme-stats)
 
+防止失联 [github (推荐)](https://github.com/qq34347476)
 防止失联 [gitee](https://gitee.com/qq34347476)
 各种脚本 及文件详细说明 查看 [wiki](https://github.com/qq34347476/js_script/wiki)
 
