@@ -1,7 +1,8 @@
 /*
 为了今后维护方便，重构二维码获取途径
 此处格式化的互助码来源于 log/jd_get_share_code 目录中的输出日志
-如果没有显示内容，请等待定时脚本的执行，或手动执行 export_sharecodes.sh 脚本生成run-all  一键快速启动所有脚本
+如果没有显示内容，请等待定时脚本的执行，或手动执行 export_sharecodes.sh
+如还是没有可使用 可使用manual-update.sh 脚本生成run-all  一键快速启动所有脚本
 
 详细配置使用说明 查看 https://github.com/qq34347476/js_script/wiki/format_share_jd_code
 
