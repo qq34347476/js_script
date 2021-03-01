@@ -84,7 +84,7 @@ if (!$.isNode()) {
       exportLog()
 
       // 判断是否通知
-      if (!$.isNode() && fsjd_notify_control) {
+      if (fsjd_notify_control) {
         showMsg(notifyMsg);
       }
     }
