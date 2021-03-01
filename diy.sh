@@ -93,7 +93,7 @@ fi
 ##############################同步 manual-update.sh ##########################################
 cd $ShellDir
 echo -e "开始更新 manual-update.sh "
-wget -q --no-check-certificate https://raw.githubusercontent.com/qq34347476/js_script/master/manual-update.sh -O manual-update.sh.new
+wget -q --no-check-certificate https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/manual-update.sh -O manual-update.sh.new
 if [ $? -eq 0 ]; then
   mv -f manual-update.sh.new manual-update.sh
   echo -e "更新 manual-update.sh 完成"
