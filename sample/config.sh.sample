@@ -129,8 +129,8 @@ export JD_BEAN_STOP=""
 
 
 ################################## 定义是否 format_share_jd_code 是否静默执行 ##################################
-## true 需要通知(默认)
-## false 静默执行
+## true 静默执行
+## false 开启通知(默认)
 export FSJD_NOTIFY_CONTROL="true"
 
 # format_share_jd_code
