@@ -154,6 +154,11 @@ function showFormatMsg(shareCodeObj) {
       shareCodeObj.Sgmh
     ).join("&")}\n`
   );
+  console.log(
+    `/submit_activity_codes jxcfd ${getRandomArrayElements(
+      shareCodeObj.Cfd
+    ).join("&")}\n`
+  );
 
   console.log(`\n提交机器人 @Commit Code Bot\n`);
   console.log(
