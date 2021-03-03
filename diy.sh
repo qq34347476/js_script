@@ -22,8 +22,8 @@ scripts_base_url_3=https://raw.githubusercontent.com/i-chenzhe/qx/main/
 
 ##############################作者脚本名称（必填）##############################
 # 将相应作者的脚本填写到以下变量中
-my_scripts_list_1="format_share_jd_code.js"
-my_scripts_list_2="jd_priceProtect.js jd_try.js"
+my_scripts_list_1="format_share_jd_code.js jd_try.js"
+my_scripts_list_2="jd_priceProtect.js"
 my_scripts_list_3="jd_asus_iqiyi.js jd_getFanslove.js jd_fanslove.js jd_gjmh.js jd_entertainment.js jd_shake.js jd_shakeBean.js"
 
 
@@ -37,7 +37,9 @@ rand(){
 
 
 
-cd $ScriptsDir   # 在 git_pull.sh 中已经定义 ScriptsDir 此变量，diy.sh 由 git_pull.sh 调用，因此可以直接使用此变量
+cd $ScriptsDir
+rm -rf ZCY01_jd_try.js # 删除 ZCY的试用脚本，使用 搬运脚本呢
+
 index=1
 
 for author in $author_list
