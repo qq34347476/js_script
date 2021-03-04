@@ -53,11 +53,6 @@ const randomPins = getRandomArrayElements(temp, 4);
 temp = [...fixPins, ...randomPins];
 run_pins = [temp.join(',')];
 
-console.log('invite_pins');
-console.log(invite_pins);
-console.log('run_pins');
-console.log(run_pins);
-
 //friendsArr内置太多会导致IOS端部分软件重启,可PR过来(此处目的:帮别人助力可得30g狗粮)
 let friendsArr = ["q34347476", "jd_157513vnw", "过天晴儿", "贾斯汀霹雳杰克比亮", "你最爱亮哥哥啊", "小兔芮贝卡", "cww301"]
 
@@ -85,15 +80,15 @@ if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
   })
-  if(process.env.JOY_RUN_DOCKER && process.env.JOY_RUN_DOCKER === 'true') {
+  // if(process.env.JOY_RUN_DOCKER && process.env.JOY_RUN_DOCKER === 'true') {
     // 使用docker下账号邀请与相互助力
-    invite_pins = run_pins = cookiesArr.map(item => {
+    run_pins = cookiesArr.map(item => {
       let arr = item.split("pt_pin=")
       return arr[1].slice(0,-1)
     });
-
-    console.log(`使用dokcer下账号相互邀请与助力`);
-  }
+    console.log(`使用dokcer下账号相互赛跑助力`);
+    console.log(`被助力账号有${run_pins}`);
+  // }
 } else {
   //支持 "京东多账号 Ck 管理"的cookie
   cookiesArr = [$.getdata('CookieJD'), $.getdata('CookieJD2'), ...jsonParse($.getdata('CookiesJD') || "[]").map(item => item.cookie)].filter(item => !!item);
@@ -198,15 +193,10 @@ async function main() {
       $.jdLogin = true;
       $.LKYLLogin = true;
       console.log(`=============【开始邀请助力】===============`)
-      const inviteIndex = $.index > invite_pins.length ? (invite_pins.length - 1) : ($.index - 1);
-      let new_invite_pins = invite_pins[inviteIndex].split(',');
-      new_invite_pins = [...new_invite_pins, ...getRandomArrayElements(friendsArr, friendsArr.length >= 18 ? 18 : friendsArr.length)];
-      await invite(new_invite_pins);
+      await invite(invite_pins);
       if ($.jdLogin && $.LKYLLogin) {
         console.log(`===========【开始助力好友赛跑】===========`)
-        const runIndex = $.index > run_pins.length ? (run_pins.length - 1) : ($.index - 1);
-        let new_run_pins = run_pins[runIndex].split(',');
-        await run(new_run_pins);
+        await run(run_pins);
       }
       await showMsg();
     }
@@ -354,6 +344,7 @@ function helpInviteFriend(friendPin) {
 //赛跑助力
 async function run(run_pins) {
   console.log(`账号${$.index} [${UserName}] 给下面名单的人进行赛跑助力\n${(run_pins.map(item => item.trim()))}\n`);
+  console.log(run_pins);
   for (let item of run_pins.map(item => item.trim())) {
     console.log(`\n账号${$.index} [${UserName}] 开始给好友 [${item}] 进行赛跑助力`)
     const combatDetailRes = await combatDetail(item);

@@ -1,5 +1,7 @@
 [![Zhe's github stats](https://github-readme-stats.vercel.app/api?username=qq34347476)](https://github.com/anuraghazra/github-readme-stats)
 
+如果您觉得这个项目不错的话可以在右上角给颗⭐吗？方便分享给更多的朋友吗？
+
 * 防止失联 [github (推荐)](https://github.com/qq34347476)
 * 防止失联 [gitee](https://gitee.com/qq34347476)
 
