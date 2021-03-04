@@ -24,7 +24,7 @@ scripts_base_url_3=https://raw.githubusercontent.com/i-chenzhe/qx/main/
 # 将相应作者的脚本填写到以下变量中
 my_scripts_list_1="format_share_jd_code.js jd_try.js"
 my_scripts_list_2="jd_priceProtect.js"
-my_scripts_list_3="jd_asus_iqiyi.js jd_getFanslove.js jd_fanslove.js jd_gjmh.js jd_entertainment.js jd_shake.js jd_shakeBean.js jd_xmf.js"
+my_scripts_list_3="jd_getFanslove.js jd_fanslove.js jd_gjmh.js jd_entertainment.js jd_shake.js jd_shakeBean.js jd_xmf.js"
 
 
 ##############################随机函数##########################################
@@ -38,10 +38,12 @@ rand(){
 
 
 cd $ScriptsDir
-rm -rf ZCY01_jd_try.js # 删除 ZCY的试用脚本，使用 搬运脚本呢
+# 清理过期脚本
+rm -rf ZCY01_jd_try.js
+rm -rf i-chenzhe_jd_asus_iqiyi.js
 
+# 下载脚本
 index=1
-
 for author in $author_list
 do
   echo -e "开始下载 $author 的脚本"
