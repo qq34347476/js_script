@@ -53,9 +53,6 @@ const randomPins = getRandomArrayElements(temp, 4);
 temp = [...fixPins, ...randomPins];
 run_pins = [temp.join(',')];
 
-//friendsArr内置太多会导致IOS端部分软件重启,可PR过来(此处目的:帮别人助力可得30g狗粮)
-let friendsArr = ["q34347476", "jd_157513vnw", "过天晴儿", "贾斯汀霹雳杰克比亮", "你最爱亮哥哥啊", "小兔芮贝卡", "cww301"]
-
 //Node.js用户请在jdCookie.js处填写京东ck;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 //IOS等用户直接用NobyDa的jd cookie
@@ -80,15 +77,21 @@ if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
   })
-  // if(process.env.JOY_RUN_DOCKER && process.env.JOY_RUN_DOCKER === 'true') {
+  if(process.env.JOY_RUN_DOCKER && process.env.JOY_RUN_DOCKER === 'true') {
     // 使用docker下账号邀请与相互助力
-    run_pins = cookiesArr.map(item => {
-      let arr = item.split("pt_pin=")
-      return arr[1].slice(0,-1)
+    arr = cookiesArr.map((item) => {
+      let arr = item.split("pt_pin=");
+      return arr[1].slice(0, -1);
     });
+    let resArr = getRandomArrayElements2(arr, run_pins.length - 1);
+
+
     console.log(`使用dokcer下账号相互赛跑助力`);
-    console.log(`被助力账号有${run_pins}`);
-  // }
+    console.log(`未保证收益最大化，一定有第一个账号，5个以内按顺序，5个以上剩下账号随机排序`);
+    console.log(`docker下账号有${arr}`);
+    console.log(`被助力账号有${resArr}`);
+    invite_pins = run_pins = resArr;
+  }
 } else {
   //支持 "京东多账号 Ck 管理"的cookie
   cookiesArr = [$.getdata('CookieJD'), $.getdata('CookieJD2'), ...jsonParse($.getdata('CookiesJD') || "[]").map(item => item.cookie)].filter(item => !!item);
@@ -203,6 +206,7 @@ async function main() {
   }
   $.done()
 }
+
 function showMsg() {
   return new Promise(async resolve => {
     if ($.inviteReward || $.runReward) {
@@ -344,7 +348,6 @@ function helpInviteFriend(friendPin) {
 //赛跑助力
 async function run(run_pins) {
   console.log(`账号${$.index} [${UserName}] 给下面名单的人进行赛跑助力\n${(run_pins.map(item => item.trim()))}\n`);
-  console.log(run_pins);
   for (let item of run_pins.map(item => item.trim())) {
     console.log(`\n账号${$.index} [${UserName}] 开始给好友 [${item}] 进行赛跑助力`)
     const combatDetailRes = await combatDetail(item);
@@ -456,6 +459,20 @@ function jsonParse(str) {
       $.msg($.name, '', '请勿随意在BoxJs输入框修改内容\n建议通过脚本去获取cookie')
       return [];
     }
+  }
+}
+function getRandomArrayElements2(arr) {
+  if(arr.length === 0) {
+    return []
+  }else {
+    const firstEl = arr[0];
+    for (var i = 0, len = arr.length; i < len; i++) {
+      var a = parseInt(Math.random() * len);
+      var temp = arr[a];
+      arr[a] = arr[i];
+      arr[i] = temp;
+    }
+    return [...new Set([firstEl, ...arr])];
   }
 }
 function getRandomArrayElements(arr, count) {
