@@ -3,20 +3,20 @@
 更新时间：2021-3-4
 活动入口：京东APP我的-更多工具-宠汪汪
 nodejs 专版!!!!
-因lxk大佬的宠汪汪助力 失效了好几天，天天赛跑倒数第一临时改的 cron 设置 9.00
+因lxk大佬的宠汪汪助力 采用云端 ？ 失效了好几天，天天赛跑倒数第一临时改的 cron 设置 9:00 执行
 
 变量 JOY_RUN_DOCKER="true"  使用docker下账号相互赛跑助力，否则使用 内置助力
 
 ===========Surge=================
 [Script]
-宠汪汪邀请助力与赛跑助力 = type=cron,cronexp="0 0 * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/jd_joy_run2.js
+宠汪汪邀请助力与赛跑助力 = type=cron,cronexp="0 9 * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/jd_joy_run2.js
 宠汪汪助力更新Token = type=http-response,pattern=^https:\/\/draw\.jdfcloud\.com(\/mirror)?\/\/api\/user\/addUser\?code=, requires-body=1, max-size=0, script-path=https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/jd_joy_run2.js
 宠汪汪助力获取Token = type=http-request,pattern=^https:\/\/draw\.jdfcloud\.com(\/mirror)?\/\/api\/user\/user\/detail\?openId=, max-size=0, script-path=https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/jd_joy_run2.js
 
 ===================Quantumult X=====================
 [task_local]
 # 宠汪汪邀请助力与赛跑助力
-0 0 * * * https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/jd_joy_run2.js, tag=宠汪汪邀请助力与赛跑助力, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdcww.png, enabled=true
+0 9 * * * https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/jd_joy_run2.js, tag=宠汪汪邀请助力与赛跑助力, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdcww.png, enabled=true
 [rewrite_local]
 # 宠汪汪助力更新Token
 ^https:\/\/draw\.jdfcloud\.com(\/mirror)?\/\/api\/user\/addUser\?code= url script-response-body https://gitee.com/lxk0301/jd_scripts/raw/master/jd_joy_run.js
@@ -25,7 +25,7 @@ nodejs 专版!!!!
 
 =====================Loon=====================
 [Script]
-cron "0 0 * * *" script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_joy_run.js, tag=宠汪汪邀请助力与赛跑助力
+cron "0 9 * * *" script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_joy_run.js, tag=宠汪汪邀请助力与赛跑助力
 http-response ^https:\/\/draw\.jdfcloud\.com(\/mirror)?\/\/api\/user\/addUser\?code= script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_joy_run.js, requires-body=true, timeout=10, tag=宠汪汪助力更新Token
 http-request ^https:\/\/draw\.jdfcloud\.com(\/mirror)?\/\/api\/user\/user\/detail\?openId= script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_joy_run.js, timeout=3600, tag=宠汪汪助力获取Token
  **/
