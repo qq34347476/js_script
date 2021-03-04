@@ -91,6 +91,8 @@ if ($.isNode()) {
       let arr = item.split("pt_pin=")
       return arr[1].slice(0,-1)
     });
+
+    console.log(`使用dokcer下账号相互邀请与助力`);
   }
 } else {
   //支持 "京东多账号 Ck 管理"的cookie
