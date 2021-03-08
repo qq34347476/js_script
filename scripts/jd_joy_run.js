@@ -1,11 +1,13 @@
 /**
 自用脚本！   宠汪汪邀请助力与赛跑 docker相互助力
 如发现商用，后续版本做加密做销毁校验，请各位都自觉
-更新时间：2021-3-4
-by: @qq34347476
+修改自原 lxk0301 宠汪汪互助脚本
+更新时间：2021-3-8
+by: @lxk0301
+修改: @qq34347476
+
 活动入口：京东APP我的-更多工具-宠汪汪
 nodejs 专版!!!!
-因lxk大佬的宠汪汪助力 采用云端 ？ 失效了好几天，天天赛跑倒数第一临时改的 cron 设置 9:00 执行
 
 变量 JOY_RUN_DOCKER="true"  使用docker下账号相互赛跑助力，否则使用 内置助力
 
@@ -41,14 +43,11 @@ http-request ^https:\/\/draw\.jdfcloud\.com(\/mirror)?\/\/api\/user\/user\/detai
 const isRequest = typeof $request != "undefined"
 const $ = new Env('宠汪汪赛跑');
 const JD_BASE_API = `https://draw.jdfcloud.com//pet`;
-//下面给出好友邀请助力的示例填写规则
-let invite_pins = ['q34347476,jd_157513vnw,过天晴儿,贾斯汀霹雳杰克比亮,你最爱亮哥哥啊,小兔芮贝卡,cww301,jd_7f9fa7588d933,jd_陈陈陈哦,jd_gJLvEXouWkgf,1988年上路']
-
-//下面给出好友赛跑助力的示例填写规则
-let run_pins = ['q34347476,jd_157513vnw,过天晴儿,贾斯汀霹雳杰克比亮,你最爱亮哥哥啊,小兔芮贝卡,cww301,jd_7f9fa7588d933,jd_陈陈陈哦,jd_gJLvEXouWkgf,1988年上路'];
+let invite_pins = ["jd_6cd93e613b0e5,被折叠的记忆33,jd_704a2e5e28a66,jd_45a6b5953b15b,zooooo58,jd_66f5cecc1efcd,jd_41345a6f96aa5"];
+let run_pins = ["被折叠的记忆33,jd_6cd93e613b0e5,jd_66f5cecc1efcd,jd_sIhNpDXJehOr,jd_41345a6f96aa5,jd_704a2e5e28a66,zooooo58"];
 let temp = run_pins[0].split(',')
-let fixPins = temp.splice(temp.indexOf('q34347476'), 1);
-fixPins.push(...temp.splice(temp.indexOf('jd_157513vnw'), 1));
+let fixPins = temp.splice(temp.indexOf("jd_6cd93e613b0e5"), 1);
+fixPins.push(...temp.splice(temp.indexOf("被折叠的记忆33"), 1));
 const randomPins = getRandomArrayElements(temp, 4);
 temp = [...fixPins, ...randomPins];
 run_pins = [temp.join(',')];
@@ -77,7 +76,7 @@ if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
   })
-  if(process.env.JOY_RUN_DOCKER && process.env.JOY_RUN_DOCKER === 'true') {
+  // if(process.env.JOY_RUN_DOCKER && process.env.JOY_RUN_DOCKER === 'true') {
     // 使用docker下账号邀请与相互助力
     arr = cookiesArr.map((item) => {
       let arr = item.split("pt_pin=");
@@ -91,7 +90,7 @@ if ($.isNode()) {
     console.log(`docker下账号有${arr}`);
     console.log(`被助力账号有${resArr}`);
     invite_pins = run_pins = resArr;
-  }
+  // }
 } else {
   //支持 "京东多账号 Ck 管理"的cookie
   cookiesArr = [$.getdata('CookieJD'), $.getdata('CookieJD2'), ...jsonParse($.getdata('CookiesJD') || "[]").map(item => item.cookie)].filter(item => !!item);
