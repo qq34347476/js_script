@@ -81,7 +81,8 @@ if (!$.isNode()) {
       $.shareCodeObj.Cfd = exportShareCodes(arr, "京喜财富岛：");
       $.shareCodeObj.Kdsd = exportShareCodes(arr, "口袋书店：");
       $.shareCodeObj.Jdcfd = exportShareCodes(arr, "京喜财富岛：");
-
+      $.shareCodeObj.Global = exportShareCodes(arr, "环球挑战赛：");
+      
       showFormatMsg($.shareCodeObj);
       exportLog()
 
@@ -229,6 +230,12 @@ function showFormatMsg(shareCodeObj) {
     "京喜财富岛",
     "MyJdcfd",
     "ForOtherJdcfd"
+  );
+  formatShareCodesForLinux(
+    shareCodeObj.Global,
+    "环球挑战赛",
+    "MyGlobal",
+    "ForOtherGlobal"
   );
 }
 
