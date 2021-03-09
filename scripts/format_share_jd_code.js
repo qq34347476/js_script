@@ -16,7 +16,7 @@
  */
 const $ = new Env("获取互助码并格式化/docker自动更新容器下所有账号互助码");
 const notifyMsg = `
-更新 环球挑战赛互助码\n
+修复 环球挑战赛互助码只读取第一个bug\n
 \n
 新手写脚本难免有BUG，做好配置备份
 有问题随时git留言
@@ -67,9 +67,9 @@ if (!$.isNode()) {
         .join("")
         .split("$&$");
 
+      $.shareCodeObj.Bean = exportShareCodes(arr, "种豆得豆：");
       $.shareCodeObj.Fruit = exportShareCodes(arr, "东东农场：");
       $.shareCodeObj.Pet = exportShareCodes(arr, "东东萌宠：");
-      $.shareCodeObj.Bean = exportShareCodes(arr, "种豆得豆：");
       $.shareCodeObj.DreamFactory = exportShareCodes(arr, "京喜工厂：");
       $.shareCodeObj.Jxnc = exportShareCodes(arr, "京喜农场：");
       $.shareCodeObj.JdFactory = exportShareCodes(arr, "东东工厂：");
@@ -80,7 +80,7 @@ if (!$.isNode()) {
       $.shareCodeObj.Kdsd = exportShareCodes(arr, "口袋书店：");
       $.shareCodeObj.Jdcfd = exportShareCodes(arr, "京喜财富岛：");
       $.shareCodeObj.Global = exportShareCodes(arr, "环球挑战赛：");
-      
+
       showFormatMsg($.shareCodeObj);
       exportLog()
 
@@ -98,9 +98,9 @@ const exportShareCodes = (arr, zhName) => {
   arr &&
     arr.forEach((item) => {
       if (item.startsWith(zhName)) {
-        // console.log(item);
+        console.log(item);
         // 【 】 类型的分割
-        let reg = /([：]|[】])([A-Za-z0-9=\-_{}:"',]+)[\u3010]/g;
+        let reg = /([：]|[：\s*]|[】])([A-Za-z0-9=\-_{}:"',]+)[\u3010]/g;
         // let reg = /）】\w+【京东/g;
         let resArr = item.match(reg);
         let itemSplits = item.split(/[】]|[：]/);
