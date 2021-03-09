@@ -88,7 +88,6 @@ if ($.isNode()) {
     console.log(`使用dokcer下账号相互赛跑助力`);
     console.log(`未保证收益最大化，一定有第一个账号，5个以内按顺序，5个以上剩下账号随机排序`);
     console.log(`docker下账号有${arr}`);
-    console.log(`被助力账号有${resArr}`);
     invite_pins = run_pins = resArr;
   // }
 } else {
@@ -123,10 +122,12 @@ if ($.isNode()) {
 //获取来客有礼Token
 let count = 0;
 async function getToken() {
+  console.log(1111);
   const url = $request.url;
   $.log(`${$.name}url\n${url}\n`)
   if (isURL(url, /^https:\/\/draw\.jdfcloud\.com(\/mirror)?\/\/api\/user\/addUser\?code=/)) {
     const body = JSON.parse($response.body);
+    console.log(body);
     const LKYLToken = body.data && body.data.token;
     if (LKYLToken) {
       $.log(`${$.name} token\n${LKYLToken}\n`);
@@ -186,6 +187,7 @@ async function main() {
 
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
+
       cookie = cookiesArr[i];
       UserName = decodeURIComponent(cookie.match(/pt_pin=(.+?);/) && cookie.match(/pt_pin=(.+?);/)[1])
       $.index = i + 1;
@@ -346,6 +348,7 @@ function helpInviteFriend(friendPin) {
 }
 //赛跑助力
 async function run(run_pins) {
+  run_pins = getRandomArrayElements2(run_pins,run_pins.length - 1);
   console.log(`账号${$.index} [${UserName}] 给下面名单的人进行赛跑助力\n${(run_pins.map(item => item.trim()))}\n`);
   for (let item of run_pins.map(item => item.trim())) {
     console.log(`\n账号${$.index} [${UserName}] 开始给好友 [${item}] 进行赛跑助力`)
