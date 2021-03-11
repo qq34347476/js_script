@@ -72,7 +72,6 @@ if (!$.isNode()) {
       $.shareCodeObj.Cash = exportShareCodes(str, "签到领现金】");
       $.shareCodeObj.Sgmh = exportShareCodes(str, "闪购盲盒】");
       $.shareCodeObj.Jdcfd = exportShareCodes(str, "财富岛】");
-
       $.shareCodeObj.Kdsd = exportShareCodes(str, "口袋书店】");
       // $.shareCodeObj.Global = exportShareCodes(str, "环球挑战赛】");
 
