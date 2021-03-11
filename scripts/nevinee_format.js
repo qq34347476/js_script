@@ -49,15 +49,22 @@ if (!$.isNode()) {
     if (err) {
       console.error(err);
     } else {
-      console.log("读取文件成功");
-      const newStr = data.replace("从最后一个日志中寻找互助码，仅供参考。",'');
+      console.log("读取log文件成功");
+      let reg = /(?:[\u3400-\u4DB5\u4E00-\u9FEA\uFA0E\uFA0F\uFA11\uFA13\uFA14\uFA1F\uFA21\uFA23\uFA24\uFA27-\uFA29]|[\uD840-\uD868\uD86A-\uD86C\uD86F-\uD872\uD874-\uD879][\uDC00-\uDFFF]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEA1\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0])+(：|[a-zA-Z]+：)/g;
+      let newStr = data
+      const nameArr = data.match(reg);
+      console.log(`检测到有以下活动互助码【${nameArr}】`);
+
+      nameArr.forEach(item => {
+        newStr = newStr.replace(item, "#" + item);
+      })
 
       exportLog(newStr);
 
       // 判断是否通知
-      if (fsjd_notify_control) {
-        showMsg(notifyMsg);
-      }
+      // if (fsjd_notify_control) {
+      //   showMsg(notifyMsg);
+      // }
     }
   });
 }
@@ -72,7 +79,7 @@ const exportLog = (str) => {
     if (err) {
       console.error(err);
     } else {
-      console.log("读取文件成功");
+      console.log("读取config.sh文件成功");
       let dataArr = data.split("# format_share_jd_code");
       if (dataArr.length > 1) {
         dataArr.splice(1, 1, str);
