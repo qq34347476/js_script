@@ -1,8 +1,5 @@
 /*
-为了今后维护方便，重构二维码获取途径
-此处格式化的互助码来源于 log/jd_get_share_code 目录中的输出日志
-如果没有显示内容，请等待定时脚本的执行，或手动执行 export_sharecodes.sh
-如还是没有可使用 可使用manual-update.sh 脚本生成run-all  一键快速启动所有脚本
+https://github.com/nevinee/jd_shell 专版
 
 详细配置使用说明 查看 https://github.com/qq34347476/js_script/wiki/format_share_jd_code
 
@@ -16,7 +13,7 @@
  */
 const $ = new Env("获取互助码并格式化/docker自动更新容器下所有账号互助码");
 const notifyMsg = `
-修复 环球挑战赛互助码只读取第一个bug\n
+https://github.com/nevinee/jd_shell 专版补充
 \n
 新手写脚本难免有BUG，做好配置备份
 有问题随时git留言
@@ -53,37 +50,9 @@ if (!$.isNode()) {
       console.error(err);
     } else {
       console.log("读取文件成功");
-      // console.log(data);
-      // 按 互助码  分割
+      const newStr = data.replace("从最后一个日志中寻找互助码，仅供参考。",'');
 
-      let arr = data
-        .split("\n")
-        .map((item) => {
-          if (item === "") {
-            return "$&$";
-          } else {
-            return item;
-          }
-        })
-        .join("")
-        .split("$&$");
-
-      $.shareCodeObj.Bean = exportShareCodes(arr, "种豆得豆：");
-      $.shareCodeObj.Fruit = exportShareCodes(arr, "东东农场：");
-      $.shareCodeObj.Pet = exportShareCodes(arr, "东东萌宠：");
-      $.shareCodeObj.DreamFactory = exportShareCodes(arr, "京喜工厂：");
-      $.shareCodeObj.Jxnc = exportShareCodes(arr, "京喜农场：");
-      $.shareCodeObj.JdFactory = exportShareCodes(arr, "东东工厂：");
-      $.shareCodeObj.Joy = exportShareCodes(arr, "疯狂的JOY：");
-      $.shareCodeObj.Cash = exportShareCodes(arr, "签到领现金：");
-      $.shareCodeObj.Sgmh = exportShareCodes(arr, "闪购盲盒：");
-      $.shareCodeObj.Cfd = exportShareCodes(arr, "京喜财富岛：");
-      $.shareCodeObj.Kdsd = exportShareCodes(arr, "口袋书店：");
-      $.shareCodeObj.Jdcfd = exportShareCodes(arr, "京喜财富岛：");
-      // $.shareCodeObj.Global = exportShareCodes(arr, "环球挑战赛：");
-
-      showFormatMsg($.shareCodeObj);
-      exportLog()
+      exportLog(newStr);
 
       // 判断是否通知
       if (fsjd_notify_control) {
@@ -93,230 +62,8 @@ if (!$.isNode()) {
   });
 }
 
-// 通用格式化
-const exportShareCodes = (arr, zhName) => {
-  const resShareCodeArr = [];
-  arr &&
-    arr.forEach((item) => {
-      if (item.startsWith(zhName)) {
-        console.log(item);
-        // 【 】 类型的分割
-        let reg = /([：]|[：\s*]|[】])([A-Za-z0-9=\-_{}:"',]+)[\u3010]/g;
-        // let reg = /）】\w+【京东/g;
-        let resArr = item.match(reg);
-        let itemSplits = item.split(/[】]|[：]/);
-        // console.log(resArr);
-
-        resArr &&
-          resArr.forEach((item) => {
-            // console.log(item);
-            resShareCodeArr.push(item.slice(1, -1));
-          });
-        resShareCodeArr.push(itemSplits[itemSplits.length - 1]);
-      }
-    });
-  return resShareCodeArr;
-};
-
-function showFormatMsg(shareCodeObj) {
-  console.log(
-    `\n========== 【格式化互助码只留随机4-5个(一定有第一个)】 ==========`
-  );
-  console.log(`\n提交机器人 @Turing Lab Bot\n`);
-  shareCodeObj.Bean &&
-    console.log(
-      `/submit_activity_codes bean ${getRandomArrayElements(
-        shareCodeObj.Bean
-      ).join("&")}\n`
-    );
-  shareCodeObj.Fruit &&
-    console.log(
-      `/submit_activity_codes farm ${getRandomArrayElements(
-        shareCodeObj.Fruit
-      ).join("&")}\n`
-    );
-  shareCodeObj.Pet &&
-    console.log(
-      `/submit_activity_codes pet ${getRandomArrayElements(
-        shareCodeObj.Pet
-      ).join("&")}\n`
-    );
-  shareCodeObj.DreamFactory &&
-    console.log(
-      `/submit_activity_codes jxfactory ${getRandomArrayElements(
-        shareCodeObj.DreamFactory
-      ).join("&")}\n`
-    );
-  shareCodeObj.JdFactory &&
-    console.log(
-      `/submit_activity_codes ddfactory ${getRandomArrayElements(
-        shareCodeObj.JdFactory
-      ).join("&")}\n`
-    );
-  // 临时活动
-  shareCodeObj.Sgmh &&
-    console.log(
-      `/submit_activity_codes sgmh ${getRandomArrayElements(
-        shareCodeObj.Sgmh
-      ).join("&")}\n`
-    );
-  shareCodeObj.Cfd &&
-    console.log(
-      `/submit_activity_codes jxcfd ${getRandomArrayElements(
-        shareCodeObj.Cfd
-      ).join("&")}\n`
-    );
-
-  console.log(`\n提交机器人 @Commit Code Bot\n`);
-  shareCodeObj.Cash &&
-    console.log(
-      `/jdcash ${getRandomArrayElements(shareCodeObj.Cash).join("&")}\n`
-    );
-  shareCodeObj.Joy &&
-    console.log(
-      `/jdcrazyjoy ${getRandomArrayElements(shareCodeObj.Joy).join("&")}\n`
-    );
-
-  console.log(`\n========== 【格式化互助码for docker ==========`);
-  shareCodeObj.Bean &&
-    formatShareCodesForLinux(
-      shareCodeObj.Bean,
-      "种豆得豆",
-      "MyBean",
-      "ForOtherBean"
-    );
-  shareCodeObj.Fruit &&
-    formatShareCodesForLinux(
-      shareCodeObj.Fruit,
-      "东东农场",
-      "MyFruit",
-      "ForOtherFruit"
-    );
-  shareCodeObj.Pet &&
-    formatShareCodesForLinux(
-      shareCodeObj.Pet,
-      "东东萌宠",
-      "MyPet",
-      "ForOtherPet"
-    );
-  shareCodeObj.Jxnc &&
-    formatShareCodesForLinux(
-      shareCodeObj.Jxnc,
-      "京喜农场",
-      "MyJxnc",
-      "ForOtherJxnc",
-      "'"
-    );
-  shareCodeObj.DreamFactory &&
-    formatShareCodesForLinux(
-      shareCodeObj.DreamFactory,
-      "京喜工厂",
-      "MyDreamFactory",
-      "ForOtherDreamFactory"
-    );
-  shareCodeObj.JdFactory &&
-    formatShareCodesForLinux(
-      shareCodeObj.JdFactory,
-      "东东工厂",
-      "MyJdFactory",
-      "ForOtherJdFactory"
-    );
-  shareCodeObj.Cash &&
-    formatShareCodesForLinux(
-      shareCodeObj.Cash,
-      "签到领现金",
-      "MyCash",
-      "ForOtherCash"
-    );
-  shareCodeObj.Joy &&
-    formatShareCodesForLinux(
-      shareCodeObj.Joy,
-      "crazy joy",
-      "MyJoy",
-      "ForOtherJoy"
-    );
-  shareCodeObj.Sgmh &&
-    formatShareCodesForLinux(
-      shareCodeObj.Sgmh,
-      "闪购盲盒",
-      "MySgmh",
-      "ForOtherSgmh"
-    );
-  shareCodeObj.Jdcfd &&
-    formatShareCodesForLinux(
-      shareCodeObj.Jdcfd,
-      "京喜财富岛",
-      "MyJdcfd",
-      "ForOtherJdcfd"
-    );
-  shareCodeObj.Global &&
-    formatShareCodesForLinux(
-      shareCodeObj.Global,
-      "环球挑战赛",
-      "MyGlobal",
-      "ForOtherGlobal"
-    );
-}
-
-const formatShareCodesForLinux = (
-  arr = [],
-  name = "",
-  itemName = "",
-  forOtherName = "",
-  marks = '"'
-) => {
-  // My 系列 格式化
-  $.exportStr += `# ${name}\n`;
-  console.log(`# ${name}`);
-  const nameArr = [];
-  for (let i = 0; i < arr.length; i++) {
-    const item = arr[i];
-    const log = `${itemName}${i + 1}=${marks}${item}${marks}`;
-    $.exportStr += `${log}\n`;
-    console.log(log);
-    const name = "${" + itemName + (i + 1) + "}";
-    nameArr.push(name);
-  }
-
-  // ForOther 系列 格式化
-  // 以 种豆得豆 个数 为准 循环 生成 other互助  补齐 没有 互助码的号 的互助 名额
-  for (let m = 0; m < $.shareCodeObj.Bean.length; m++) {
-    // for (let m = 0; m < nameArr.length; m++) {
-    // const item = nameArr[m]
-    // console.log(
-    //   `${forOtherName}${m + 1}='${nameArr
-    //     .filter(cell => cell !== item)
-    //     .join('@')}'`
-    // )
-    const log = `${forOtherName}${m + 1}="${nameArr.join("@")}"`;
-    $.exportStr += `${log}\n`;
-    console.log(log);
-  }
-};
-
-// 随机区 数组中的 几个元素， 必有 第一个元素
-function getRandomArrayElements(arr = [], count = 4) {
-  if (arr.length <= 5) {
-    return arr;
-  } else {
-    let shuffled = arr.slice(0),
-      i = arr.length,
-      min = i - count,
-      temp,
-      index;
-    while (i-- > min) {
-      index = Math.floor((i + 1) * Math.random());
-      temp = shuffled[index];
-      shuffled[index] = shuffled[i];
-      shuffled[i] = temp;
-    }
-    const res = [arr[0], ...shuffled.slice(min)];
-    return [...new Set(res)];
-  }
-}
-
 // 替换 config.sh 内容
-const exportLog = () => {
+const exportLog = (str) => {
   const fs = require("fs");
   const path = require("path");
   let file = path.resolve(__dirname, "../config/config.sh");
@@ -328,10 +75,10 @@ const exportLog = () => {
       console.log("读取文件成功");
       let dataArr = data.split("# format_share_jd_code");
       if (dataArr.length > 1) {
-        dataArr.splice(1, 1, $.exportStr);
-        $.exportStr = dataArr.join("# format_share_jd_code");
+        dataArr.splice(1, 1, str);
+        str = dataArr.join("# format_share_jd_code");
 
-        fs.writeFile(file, $.exportStr, { encoding: "utf8" }, (err) => {
+        fs.writeFile(file, str, { encoding: "utf8" }, (err) => {
           console.log(err);
         });
         console.log("更新互助码配置成功");
