@@ -77,7 +77,6 @@ if (!$.isNode()) {
       $.shareCodeObj.Joy = exportShareCodes(arr, "疯狂的JOY：");
       $.shareCodeObj.Cash = exportShareCodes(arr, "签到领现金：");
       $.shareCodeObj.Sgmh = exportShareCodes(arr, "闪购盲盒：");
-      $.shareCodeObj.Cfd = exportShareCodes(arr, "京喜财富岛：");
       $.shareCodeObj.Kdsd = exportShareCodes(arr, "口袋书店：");
       $.shareCodeObj.Jdcfd = exportShareCodes(arr, "京喜财富岛：");
       // $.shareCodeObj.Global = exportShareCodes(arr, "环球挑战赛：");
@@ -160,10 +159,10 @@ function showFormatMsg(shareCodeObj) {
         shareCodeObj.Sgmh
       ).join("&")}\n`
     );
-  shareCodeObj.Cfd &&
+  shareCodeObj.Jdcfd &&
     console.log(
       `/submit_activity_codes jxcfd ${getRandomArrayElements(
-        shareCodeObj.Cfd
+        shareCodeObj.Jdcfd
       ).join("&")}\n`
     );
 
