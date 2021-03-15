@@ -14,6 +14,7 @@ jd_get_share_code 日志 专用
 const $ = new Env("获取互助码并格式化/docker自动更新容器下所有账号互助码");
 const notifyMsg = `
 读取 jd_get_share_code 日志 版本专用
+新增京东赚赚互助码\n
 \n
 新手写脚本难免有BUG，做好配置备份
 有问题随时git留言
