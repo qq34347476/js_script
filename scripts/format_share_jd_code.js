@@ -26,14 +26,15 @@ const fs = require("fs");
 const path = require("path");
 $.shareCodeObj = {};
 $.exportStr = "";
+$.number = 0;
 
-let fsjd_notify_control = true
+let fsjd_notify_control = true;
 
 if (!$.isNode()) {
   console.log("不是nodejs环境");
 } else {
   if (process.env.FSJD_NOTIFY_CONTROL === "true") {
-    fsjd_notify_control = false
+    fsjd_notify_control = false;
   }
 
   let filePath = path.resolve(__dirname, "../log/export_sharecodes");
@@ -79,10 +80,22 @@ if (!$.isNode()) {
       $.shareCodeObj.Sgmh = exportShareCodes(arr, "闪购盲盒：");
       $.shareCodeObj.Kdsd = exportShareCodes(arr, "口袋书店：");
       $.shareCodeObj.Jdcfd = exportShareCodes(arr, "京喜财富岛：");
-      // $.shareCodeObj.Global = exportShareCodes(arr, "环球挑战赛：");
+      $.shareCodeObj.Jdzz = exportShareCodes(arr, "京东赚赚：");
+      $.shareCodeObj.Global = exportShareCodes(arr, "环球挑战赛：");
+
+      // 判断有多少账号
+      const ObjArrLengths = [];
+      for (const key in $.shareCodeObj) {
+        if (Object.hasOwnProperty.call($.shareCodeObj, key)) {
+          const item = $.shareCodeObj[key];
+          ObjArrLengths.push(item.length);
+        }
+      }
+      $.number = ObjArrLengths.reduce((a, b) => (a > b ? a : b));
+
 
       showFormatMsg($.shareCodeObj);
-      exportLog()
+      exportLog();
 
       // 判断是否通知
       if (fsjd_notify_control) {
@@ -98,7 +111,6 @@ const exportShareCodes = (arr, zhName) => {
   arr &&
     arr.forEach((item) => {
       if (item.startsWith(zhName)) {
-        console.log(item);
         // 【 】 类型的分割
         let reg = /([：]|[：\s*]|[】])([A-Za-z0-9=\-_{}:"',]+)[\u3010]/g;
         // let reg = /）】\w+【京东/g;
@@ -174,6 +186,11 @@ function showFormatMsg(shareCodeObj) {
   shareCodeObj.Joy &&
     console.log(
       `/jdcrazyjoy ${getRandomArrayElements(shareCodeObj.Joy).join("&")}\n`
+    );
+
+  shareCodeObj.Jdzz &&
+    console.log(
+      `/jdzz ${getRandomArrayElements(shareCodeObj.Jdzz).join("&")}\n`
     );
 
   console.log(`\n========== 【格式化互助码for docker ==========`);
@@ -255,6 +272,14 @@ function showFormatMsg(shareCodeObj) {
       "MyGlobal",
       "ForOtherGlobal"
     );
+
+  shareCodeObj.Jdzz &&
+    formatShareCodesForLinux(
+      shareCodeObj.Jdzz,
+      "京东赚赚",
+      "MyJdzz",
+      "ForOtherJdzz"
+    );
 }
 
 const formatShareCodesForLinux = (
@@ -278,15 +303,7 @@ const formatShareCodesForLinux = (
   }
 
   // ForOther 系列 格式化
-  // 以 种豆得豆 个数 为准 循环 生成 other互助  补齐 没有 互助码的号 的互助 名额
-  for (let m = 0; m < $.shareCodeObj.Bean.length; m++) {
-    // for (let m = 0; m < nameArr.length; m++) {
-    // const item = nameArr[m]
-    // console.log(
-    //   `${forOtherName}${m + 1}='${nameArr
-    //     .filter(cell => cell !== item)
-    //     .join('@')}'`
-    // )
+  for (let m = 0; m < $.number; m++) {
     const log = `${forOtherName}${m + 1}="${nameArr.join("@")}"`;
     $.exportStr += `${log}\n`;
     console.log(log);
