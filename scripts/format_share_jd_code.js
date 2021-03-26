@@ -16,7 +16,7 @@
  */
 const $ = new Env("获取互助码并格式化/docker自动更新容器下所有账号互助码");
 const notifyMsg = `
-新增京东赚赚互助码\n
+优化算法\n
 \n
 新手写脚本难免有BUG，做好配置备份
 有问题随时git留言
@@ -37,6 +37,17 @@ if (!$.isNode()) {
     fsjd_notify_control = false;
   }
 
+  // 判断需要生成 ForOther的个数
+  const Cookiefile = path.resolve(__dirname, "../config/config.sh");
+
+  fs.readFile(Cookiefile, "utf-8", function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    const CookieReg = /Cookie\d+=/g;
+    $.number = data.match(CookieReg).length;
+  });
+
   let filePath = path.resolve(__dirname, "../log/export_sharecodes");
   let readDir = fs.readdirSync(filePath).reverse();
   let fileName;
@@ -53,10 +64,9 @@ if (!$.isNode()) {
     if (err) {
       console.error(err);
     } else {
-      console.log("读取文件成功");
-      // console.log(data);
-      // 按 互助码  分割
+      console.log("读取export_sharecodes日志成功");
 
+      // 按 互助码  分割
       let arr = data
         .split("\n")
         .map((item) => {
@@ -69,30 +79,19 @@ if (!$.isNode()) {
         .join("")
         .split("$&$");
 
-      $.shareCodeObj.Bean = exportShareCodes(arr, "种豆得豆：");
       $.shareCodeObj.Fruit = exportShareCodes(arr, "东东农场：");
       $.shareCodeObj.Pet = exportShareCodes(arr, "东东萌宠：");
+      $.shareCodeObj.Bean = exportShareCodes(arr, "种豆得豆：");
       $.shareCodeObj.DreamFactory = exportShareCodes(arr, "京喜工厂：");
-      $.shareCodeObj.Jxnc = exportShareCodes(arr, "京喜农场：");
       $.shareCodeObj.JdFactory = exportShareCodes(arr, "东东工厂：");
       $.shareCodeObj.Joy = exportShareCodes(arr, "疯狂的JOY：");
+      $.shareCodeObj.Jdzz = exportShareCodes(arr, "京东赚赚：");
+      $.shareCodeObj.Jxnc = exportShareCodes(arr, "京喜农场：");
+      $.shareCodeObj.Jdcfd = exportShareCodes(arr, "京喜财富岛：");
+      $.shareCodeObj.BookShop = exportShareCodes(arr, "口袋书店：");
       $.shareCodeObj.Cash = exportShareCodes(arr, "签到领现金：");
       $.shareCodeObj.Sgmh = exportShareCodes(arr, "闪购盲盒：");
-      $.shareCodeObj.Kdsd = exportShareCodes(arr, "口袋书店：");
-      $.shareCodeObj.Jdcfd = exportShareCodes(arr, "京喜财富岛：");
-      $.shareCodeObj.Jdzz = exportShareCodes(arr, "京东赚赚：");
       $.shareCodeObj.Global = exportShareCodes(arr, "环球挑战赛：");
-
-      // 判断有多少账号
-      const ObjArrLengths = [];
-      for (const key in $.shareCodeObj) {
-        if (Object.hasOwnProperty.call($.shareCodeObj, key)) {
-          const item = $.shareCodeObj[key];
-          ObjArrLengths.push(item.length);
-        }
-      }
-      $.number = ObjArrLengths.reduce((a, b) => (a > b ? a : b));
-
 
       showFormatMsg($.shareCodeObj);
       exportLog();
@@ -111,19 +110,22 @@ const exportShareCodes = (arr, zhName) => {
   arr &&
     arr.forEach((item) => {
       if (item.startsWith(zhName)) {
-        // 【 】 类型的分割
-        let reg = /([：]|[：\s*]|[】])([A-Za-z0-9=\-_{}:"',]+)[\u3010]/g;
-        // let reg = /）】\w+【京东/g;
-        let resArr = item.match(reg);
-        let itemSplits = item.split(/[】]|[：]/);
-        // console.log(resArr);
+        const keyReg = /(账号)(\d+)(（)/g;
+        let keyStr = item.match(keyReg).join("★");
+        keyStr = keyStr.replace(keyReg,'$2')
+        const valueReg = /(】)([A-Za-z0-9=\-_{}:"',]+)/g;
+        let valueStr = item.match(valueReg).join('★')
+        valueStr = valueStr.replace(valueReg, "$2");
+        const keyArr = keyStr.split("★");
+        const valueArr = valueStr.split("★");
 
-        resArr &&
-          resArr.forEach((item) => {
-            // console.log(item);
-            resShareCodeArr.push(item.slice(1, -1));
+        keyArr && keyArr.forEach((item, index) => {
+          resShareCodeArr.push({
+            key: item,
+            value: valueArr[index],
           });
-        resShareCodeArr.push(itemSplits[itemSplits.length - 1]);
+        });
+        // console.log(resShareCodeArr);
       }
     });
   return resShareCodeArr;
@@ -280,6 +282,14 @@ function showFormatMsg(shareCodeObj) {
       "MyJdzz",
       "ForOtherJdzz"
     );
+
+    shareCodeObj.BookShop &&
+      formatShareCodesForLinux(
+        shareCodeObj.BookShop,
+        "口袋书店",
+        "MyBookShop",
+        "ForOtherBookShop"
+      );
 }
 
 const formatShareCodesForLinux = (
@@ -295,10 +305,10 @@ const formatShareCodesForLinux = (
   const nameArr = [];
   for (let i = 0; i < arr.length; i++) {
     const item = arr[i];
-    const log = `${itemName}${i + 1}=${marks}${item}${marks}`;
+    const log = `${itemName}${item.key}=${marks}${item.value}${marks}`;
     $.exportStr += `${log}\n`;
     console.log(log);
-    const name = "${" + itemName + (i + 1) + "}";
+    const name = "${" + itemName + (item.key) + "}";
     nameArr.push(name);
   }
 
@@ -333,15 +343,16 @@ function getRandomArrayElements(arr = [], count = 4) {
 
 // 替换 config.sh 内容
 const exportLog = () => {
-  const fs = require("fs");
-  const path = require("path");
+  // const fs = require("fs");
+  // const path = require("path");
   let file = path.resolve(__dirname, "../config/config.sh");
 
   fs.readFile(file, "utf-8", function (err, data) {
     if (err) {
-      console.error(err);
+      return console.error(err);
     } else {
-      console.log("读取文件成功");
+      console.log("读取config.sh文件成功");
+
       let dataArr = data.split("# format_share_jd_code");
       if (dataArr.length > 1) {
         dataArr.splice(1, 1, $.exportStr);
