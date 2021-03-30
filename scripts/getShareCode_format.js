@@ -93,10 +93,10 @@ if (!$.isNode()) {
 const exportShareCodes = (str, zhName) => {
   const resShareCodeArr = [];
   // console.log(str);
-  let reg = new RegExp(`(${zhName})([A-Za-z0-9=\-_{}:"',]+(【|☆))`, "gim");
+  let reg = new RegExp(`(${zhName})([A-Za-z0-9=-_\-_{}:"',]+(【|☆))`, "gim");
   let arr = str.match(reg);
   // console.log(arr);
-  const reg2 = /([A-Za-z0-9=\-_{}:"',]+)/;
+  const reg2 = /([A-Za-z0-9=-_\-_{}:"',]+)/;
   arr &&
     arr.forEach((item) => {
       let res = item.replace(zhName, "");
