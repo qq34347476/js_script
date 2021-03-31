@@ -111,7 +111,12 @@ const exportShareCodes = (arr, zhName) => {
     arr.forEach((item) => {
       if (item.startsWith(zhName)) {
         const keyReg = /(账号)(\d+)(（)/g;
-        let keyStr = item.match(keyReg).join("★");
+        let keyStr = item.match(keyReg)
+        console.log(keyStr);
+        if(!keyStr) {
+          return
+        }
+        keyStr = keyStr.join("★");
         keyStr = keyStr.replace(keyReg,'$2')
         const valueReg = /(】)([A-Za-z0-9=\-_{}:"',]+)/g;
         let valueStr = item.match(valueReg).join('★')
