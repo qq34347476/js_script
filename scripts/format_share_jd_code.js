@@ -112,7 +112,6 @@ const exportShareCodes = (arr, zhName) => {
       if (item.startsWith(zhName)) {
         const keyReg = /(账号)(\d+)(（)/g;
         let keyStr = item.match(keyReg)
-        console.log(keyStr);
         if(!keyStr) {
           return
         }
