@@ -118,7 +118,11 @@ const exportShareCodes = (arr, zhName) => {
         keyStr = keyStr.join("★");
         keyStr = keyStr.replace(keyReg,'$2')
         const valueReg = /(】)([A-Za-z0-9=\-_{}:"',]+)/g;
-        let valueStr = item.match(valueReg).join('★')
+        let valueStr = item.match(valueReg)
+        if(!valueStr) {
+          return
+        }
+        valueStr = valueStr.join('★')
         valueStr = valueStr.replace(valueReg, "$2");
         const keyArr = keyStr.split("★");
         const valueArr = valueStr.split("★");
