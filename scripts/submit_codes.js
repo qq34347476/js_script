@@ -25,9 +25,19 @@ if (!$.isNode()) {
     fsjd_notify_control = false;
   }
 
+  let filePath = path.resolve(__dirname, "../log/jcode");
+  let readDir = fs.readdirSync(filePath).reverse();
+  console.log(111);
+  console.log(readDir);
+  let fileName;
 
-  let file = path.resolve(__dirname, "../config/config.sh");
+  if (readDir && readDir.length > 0) {
+    fileName = readDir[0];
+  } else {
+    console.log("没有生成日志，请手动运行 jcode");
+  }
 
+  let file = path.resolve(__dirname, filePath, fileName);
   // 读取日志
   fs.readFile(file, "utf-8", function (err, data) {
     if (err) {
@@ -40,10 +50,13 @@ if (!$.isNode()) {
       $.shareCodeObj.DreamFactory = getCodes("MyDreamFactory", data);
       $.shareCodeObj.JdFactory = getCodes("MyJdFactory", data);
       $.shareCodeObj.Sgmh = getCodes("MySgmh", data);
-      $.shareCodeObj.Jdcfd = getCodes("MyJdcfd", data);
       $.shareCodeObj.Cash = getCodes("MyCash", data);
       $.shareCodeObj.Joy = getCodes("MyJoy", data);
       $.shareCodeObj.Jdzz = getCodes("MyJdzz", data);
+
+      $.shareCodeObj.Cfd = getCodes("MyCfd", data);
+      $.shareCodeObj.Jxnc = getCodes("MyJxnc", data);
+      $.shareCodeObj.Health = getCodes("MyHealth", data);
 
       showFormatMsg($.shareCodeObj);
 
@@ -111,10 +124,16 @@ function showFormatMsg(shareCodeObj) {
         shareCodeObj.Sgmh
       ).join("&")}\n`
     );
-  shareCodeObj.Jdcfd &&
+  shareCodeObj.Cfd &&
     console.log(
       `/submit_activity_codes jxcfd ${getRandomArrayElements(
-        shareCodeObj.Jdcfd
+        shareCodeObj.Cfd
+      ).join("&")}\n`
+    );
+  shareCodeObj.Health &&
+    console.log(
+      `/submit_activity_codes health ${getRandomArrayElements(
+        shareCodeObj.Health
       ).join("&")}\n`
     );
 
