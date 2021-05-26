@@ -96,8 +96,8 @@ export TG_BOT_TOKEN=""
 export TG_USER_ID=""
 
 ## 4. 钉钉，教程（看DD_BOT_TOKEN和DD_BOT_SECRET部分）：https://gitee.com/lxk0301/jd_scripts/blob/master/githubAction.md
-export DD_BOT_TOKEN=""
-export DD_BOT_SECRET=""
+export DD_BOT_TOKEN="cbea5c4b27116aaa5bd0c4ab6612eba25dba581ebb806087ddbbe1d057dea776"
+export DD_BOT_SECRET="SECa37c00620ded1fd53ceac54542133788676c42c38b11e1fd2991f2413ee48e01"
 
 ## 5. iGot聚合推送，支持多方式推送，填写iGot的推送key。教程：https://gitee.com/lxk0301/jd_scripts/blob/master/githubAction.md
 export IGOT_PUSH_KEY=""

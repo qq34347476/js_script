@@ -53,7 +53,7 @@ temp = [...fixPins, ...randomPins];
 run_pins = [temp.join(',')];
 
 //Node.js用户请在jdCookie.js处填写京东ck;
-const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
+const jdCookieNode = $.isNode() ? require('../scripts/jdCookie.js') : '';
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [], cookie = '';
 const headers = {
@@ -63,7 +63,7 @@ const headers = {
   'Lottery-Access-Signature': '',
   'Content-Type': 'application/json',
   'reqSource': 'weapp',
-  'User-Agent': $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0"),
+  'User-Agent': $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('../scripts/USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0"),
   'Cookie': '',
   'openId': '',
   'Host': 'draw.jdfcloud.com',

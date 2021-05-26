@@ -18,7 +18,7 @@ https://github.com/nevinee/jd_shell 专版补充
 新手写脚本难免有BUG，做好配置备份
 有问题随时git留言
 详细配置请参考 https://github.com/qq34347476/js_script/wiki/format_share_jd_code\n`;
-const notify = $.isNode() ? require("./sendNotify") : "";
+const notify = $.isNode() ? require("../scripts/sendNotify") : "";
 const fs = require("fs");
 const path = require("path");
 $.shareCodeObj = {};

@@ -1,5 +1,8 @@
 /*
-jd_get_share_code 日志 专用
+为了今后维护方便，重构二维码获取途径
+此处格式化的互助码来源于 log/jd_get_share_code 目录中的输出日志
+如果没有显示内容，请等待定时脚本的执行，或手动执行 export_sharecodes.sh
+如还是没有可使用 可使用manual-update.sh 脚本生成run-all  一键快速启动所有脚本
 
 详细配置使用说明 查看 https://github.com/qq34347476/js_script/wiki/format_share_jd_code
 
@@ -7,19 +10,20 @@ jd_get_share_code 日志 专用
 
 只支持nodejs
 
-#docker自动更新容器下所有账号互助码
-55 11,23 * * * https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/getShareCode_format.js, tag=docker自动更新容器下所有账号互助码, img-url=https://raw.githubusercontent.com/yogayyy/task/master/huzhucode.png, enabled=true
+#获取互助码并格式化/docker自动更新容器下所有账号互助码
+55 11,23 * * * https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/format_share_jd_code.js, tag=获取互助码并格式化/docker自动更新容器下所有账号互助码, img-url=https://raw.githubusercontent.com/yogayyy/task/master/huzhucode.png, enabled=true
 
  */
-const $ = new Env("docker自动更新容器下所有账号互助码");
+const $ = new Env("获取互助码并格式化/docker自动更新容器下所有账号互助码");
 const notifyMsg = `
-读取 jd_get_share_code 日志 版本专用
-新增京东赚赚互助码\n
+修复bug并移除 机器人格式化\n
+机器人格式化分离单独脚本
+https://raw.githubusercontent.com/qq34347476/js_script/master/scripts/submit_codes.js
 \n
 新手写脚本难免有BUG，做好配置备份
 有问题随时git留言
 详细配置请参考 https://github.com/qq34347476/js_script/wiki/format_share_jd_code\n`;
-const notify = $.isNode() ? require("./sendNotify") : "";
+const notify = $.isNode() ? require("../scripts/sendNotify") : "";
 const fs = require("fs");
 const path = require("path");
 $.shareCodeObj = {};
@@ -35,14 +39,25 @@ if (!$.isNode()) {
     fsjd_notify_control = false;
   }
 
-  let filePath = path.resolve(__dirname, "../log/jd_get_share_code");
+  // 判断需要生成 ForOther的个数
+  const Cookiefile = path.resolve(__dirname, "../config/config.sh");
+
+  fs.readFile(Cookiefile, "utf-8", function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    const CookieReg = /Cookie\d+=/g;
+    $.number = data.match(CookieReg).length;
+  });
+
+  let filePath = path.resolve(__dirname, "../log/export_sharecodes");
   let readDir = fs.readdirSync(filePath).reverse();
   let fileName;
 
   if (readDir && readDir.length > 0) {
     fileName = readDir[0];
   } else {
-    console.log("没有生成日志，请手动运行 jd_get_share_code");
+    console.log("没有生成日志，请手动运行 bash export_sharecodes.sh");
   }
 
   // 读取日志
@@ -51,32 +66,34 @@ if (!$.isNode()) {
     if (err) {
       console.error(err);
     } else {
-      console.log("读取文件成功");
-      // console.log(data);
-      // 初始格式化
-      let str = data.replace(/\s+/g, "");
-      str = str.replace(
-        /注意：京喜农场种植种子发生变化的时候，互助码也会变！！/g,
-        ""
-      );
-      str = str.replace(/======账号/g, "☆账号");
-      // 获取账号个数
-      const num = str.match(/账号\d+结束/g);
-      $.number = num.length;
+      console.log("读取export_sharecodes日志成功");
 
-      $.shareCodeObj.Bean = exportShareCodes(str, "种豆得豆】");
-      $.shareCodeObj.Fruit = exportShareCodes(str, "京东农场】");
-      $.shareCodeObj.Pet = exportShareCodes(str, "京东萌宠】");
-      $.shareCodeObj.DreamFactory = exportShareCodes(str, "京喜工厂】");
-      $.shareCodeObj.Jxnc = exportShareCodes(str, "京喜农场】");
-      $.shareCodeObj.JdFactory = exportShareCodes(str, "东东工厂】");
-      $.shareCodeObj.Joy = exportShareCodes(str, "crazyJoy】");
-      $.shareCodeObj.Cash = exportShareCodes(str, "签到领现金】");
-      $.shareCodeObj.Sgmh = exportShareCodes(str, "闪购盲盒】");
-      $.shareCodeObj.Jdcfd = exportShareCodes(str, "财富岛】");
-      $.shareCodeObj.Kdsd = exportShareCodes(str, "口袋书店】");
-      $.shareCodeObj.Jdzz = exportShareCodes(str, "的京东赚赚好友互助码】");
-      $.shareCodeObj.Global = exportShareCodes(str, "环球挑战赛】");
+      // 按 互助码  分割
+      let arr = data
+        .split("\n")
+        .map((item) => {
+          if (item === "") {
+            return "$&$";
+          } else {
+            return item;
+          }
+        })
+        .join("")
+        .split("$&$");
+
+      $.shareCodeObj.Fruit = exportShareCodes(arr, "东东农场：");
+      $.shareCodeObj.Pet = exportShareCodes(arr, "东东萌宠：");
+      $.shareCodeObj.Bean = exportShareCodes(arr, "种豆得豆：");
+      $.shareCodeObj.DreamFactory = exportShareCodes(arr, "京喜工厂：");
+      $.shareCodeObj.JdFactory = exportShareCodes(arr, "东东工厂：");
+      $.shareCodeObj.Joy = exportShareCodes(arr, "疯狂的JOY：");
+      $.shareCodeObj.Jdzz = exportShareCodes(arr, "京东赚赚：");
+      $.shareCodeObj.Jxnc = exportShareCodes(arr, "京喜农场：");
+      $.shareCodeObj.Jdcfd = exportShareCodes(arr, "京喜财富岛：");
+      $.shareCodeObj.BookShop = exportShareCodes(arr, "口袋书店：");
+      $.shareCodeObj.Cash = exportShareCodes(arr, "签到领现金：");
+      $.shareCodeObj.Sgmh = exportShareCodes(arr, "闪购盲盒：");
+      $.shareCodeObj.Global = exportShareCodes(arr, "环球挑战赛：");
 
       showFormatMsg($.shareCodeObj);
       exportLog();
@@ -90,22 +107,37 @@ if (!$.isNode()) {
 }
 
 // 通用格式化
-const exportShareCodes = (str, zhName) => {
+const exportShareCodes = (arr, zhName) => {
   const resShareCodeArr = [];
-  // console.log(str);
-  let reg = new RegExp(`(${zhName})([A-Za-z0-9=-_\-_{}:"',]+(【|☆))`, "gim");
-  let arr = str.match(reg);
-  // console.log(arr);
-  const reg2 = /([A-Za-z0-9=-_\-_{}:"',]+)/;
   arr &&
     arr.forEach((item) => {
-      let res = item.replace(zhName, "");
-      // console.log(res);
-      res = res.match(reg2);
-      // console.log(res);
-      resShareCodeArr.push(res[0]);
-    });
+      if (item.startsWith(zhName)) {
+        const keyReg = /(账号)(\d+)(（)/g;
+        let keyStr = item.match(keyReg)
+        if(!keyStr) {
+          return
+        }
+        keyStr = keyStr.join("★");
+        keyStr = keyStr.replace(keyReg,'$2')
+        const valueReg = /(】)([A-Za-z0-9=\-_{}:"',]+)/g;
+        let valueStr = item.match(valueReg)
+        if(!valueStr) {
+          return
+        }
+        valueStr = valueStr.join('★')
+        valueStr = valueStr.replace(valueReg, "$2");
+        const keyArr = keyStr.split("★");
+        const valueArr = valueStr.split("★");
 
+        keyArr && keyArr.forEach((item, index) => {
+          resShareCodeArr.push({
+            key: item,
+            value: valueArr[index],
+          });
+        });
+        // console.log(resShareCodeArr);
+      }
+    });
   return resShareCodeArr;
 };
 
@@ -151,10 +183,10 @@ function showFormatMsg(shareCodeObj) {
         shareCodeObj.Sgmh
       ).join("&")}\n`
     );
-  shareCodeObj.Cfd &&
+  shareCodeObj.Jdcfd &&
     console.log(
       `/submit_activity_codes jxcfd ${getRandomArrayElements(
-        shareCodeObj.Cfd
+        shareCodeObj.Jdcfd
       ).join("&")}\n`
     );
 
@@ -167,6 +199,7 @@ function showFormatMsg(shareCodeObj) {
     console.log(
       `/jdcrazyjoy ${getRandomArrayElements(shareCodeObj.Joy).join("&")}\n`
     );
+
   shareCodeObj.Jdzz &&
     console.log(
       `/jdzz ${getRandomArrayElements(shareCodeObj.Jdzz).join("&")}\n`
@@ -244,13 +277,14 @@ function showFormatMsg(shareCodeObj) {
       "MyJdcfd",
       "ForOtherJdcfd"
     );
-  // shareCodeObj.Global &&
-  //   formatShareCodesForLinux(
-  //     shareCodeObj.Global,
-  //     "环球挑战赛",
-  //     "MyGlobal",
-  //     "ForOtherGlobal"
-  //   );
+  shareCodeObj.Global &&
+    formatShareCodesForLinux(
+      shareCodeObj.Global,
+      "环球挑战赛",
+      "MyGlobal",
+      "ForOtherGlobal"
+    );
+
   shareCodeObj.Jdzz &&
     formatShareCodesForLinux(
       shareCodeObj.Jdzz,
@@ -258,6 +292,14 @@ function showFormatMsg(shareCodeObj) {
       "MyJdzz",
       "ForOtherJdzz"
     );
+
+    shareCodeObj.BookShop &&
+      formatShareCodesForLinux(
+        shareCodeObj.BookShop,
+        "口袋书店",
+        "MyBookShop",
+        "ForOtherBookShop"
+      );
 }
 
 const formatShareCodesForLinux = (
@@ -273,15 +315,14 @@ const formatShareCodesForLinux = (
   const nameArr = [];
   for (let i = 0; i < arr.length; i++) {
     const item = arr[i];
-    const log = `${itemName}${i + 1}=${marks}${item}${marks}`;
+    const log = `${itemName}${item.key}=${marks}${item.value}${marks}`;
     $.exportStr += `${log}\n`;
     console.log(log);
-    const name = "${" + itemName + (i + 1) + "}";
+    const name = "${" + itemName + (item.key) + "}";
     nameArr.push(name);
   }
 
   // ForOther 系列 格式化
-  // 以 种豆得豆 个数 为准 循环 生成 other互助  补齐 没有 互助码的号 的互助 名额
   for (let m = 0; m < $.number; m++) {
     const log = `${forOtherName}${m + 1}="${nameArr.join("@")}"`;
     $.exportStr += `${log}\n`;
@@ -312,15 +353,16 @@ function getRandomArrayElements(arr = [], count = 4) {
 
 // 替换 config.sh 内容
 const exportLog = () => {
-  const fs = require("fs");
-  const path = require("path");
+  // const fs = require("fs");
+  // const path = require("path");
   let file = path.resolve(__dirname, "../config/config.sh");
 
   fs.readFile(file, "utf-8", function (err, data) {
     if (err) {
-      console.error(err);
+      return console.error(err);
     } else {
-      console.log("读取文件成功");
+      console.log("读取config.sh文件成功");
+
       let dataArr = data.split("# format_share_jd_code");
       if (dataArr.length > 1) {
         dataArr.splice(1, 1, $.exportStr);
