@@ -14,8 +14,8 @@ import socks
 socks.set_default_proxy(socks.SOCKS5, "192.168.2.16", 3220)
 socket.socket = socks.socksocket
 #填自己的
-api_id = 4686877
-api_hash = '799ebf6c9db54ea83b007009c0a4c094'
+api_id = 4681177
+api_hash = '799ebf6c9db54ea83b007889c0a4c094'
 client = TelegramClient('anon', api_id, api_hash)
 
 #日志路径,按照以下示例
