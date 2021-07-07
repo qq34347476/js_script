@@ -98,7 +98,7 @@ let joys;
 
      */
 
-    break;
+    // break;
   }
   /*
   for (let i = 0; i < cookiesArr.length; i++) {
