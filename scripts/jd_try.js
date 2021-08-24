@@ -16,7 +16,7 @@ let cookiesArr = [],
   jdNotify = false,
   jdDebug = false,
   notify;
-notifyMsg = "";
+// notifyMsg = "";
 const selfdomain = "https://try.m.jd.com";
 let allGoodList = [];
 
@@ -130,7 +130,7 @@ const typeMap = {
     }
   }
 
-  notify.sendNotify(`${$.name}`, notifyMsg);
+  // notify.sendNotify(`${$.name}`, notifyMsg);
 })()
   .catch((e) => {
     console.log(`❗️ ${$.name} 运行错误！\n${e}`);
@@ -576,7 +576,8 @@ async function showMsg() {
       "open-url": "https://try.m.jd.com/user",
     });
     if ($.isNode()) {
-      notifyMsg += `${message}\n\n`;
+      // notifyMsg += `${message}\n\n`;
+      notify.sendNotify(`${$.name}`, message);
     }
   } else {
     console.log(message);
