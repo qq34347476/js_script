@@ -1,10 +1,7 @@
 /*
-自改版用脚本，误传
-原每个账户通知一次 => 全部执行完通知一次
-变量:
-JD_TRY_MIN_PRICE 最小价格单位 默认 201 过滤调垃圾
+新版京东试用，误传
 
-⚠️ 非常耗时的脚本。一个账号可能执行半小时！
+⚠️ 非常耗时的脚本。一个账号可能执行1小时！
 自行根据账号数量修改脚本超时时间
 每天最多关注300个商店，但用户商店关注上限为500个。
 请配合取关脚本试用，使用 jd_unsubscribe.js 提前取关至少250个商店确保京东试用脚本正常运行。
@@ -17,57 +14,32 @@ let cookiesArr = [],
   jdDebug = false,
   notify;
 // notifyMsg = "";
-const selfdomain = "https://try.m.jd.com";
-let allGoodList = [];
-
 // default params
 $.pageSize = 12;
-let cidsList = [
-  "家用电器",
-  "手机数码",
-  "电脑办公",
-  "家居家装",
-  "美妆护肤",
-  "服饰鞋包",
-  "母婴玩具",
-  "生鲜美食",
-  "图书音像",
-  "钟表奢品",
-  "个人护理",
-  "家庭清洁",
-  "食品饮料",
+let tabList = [
+  // { tabName: "精选", tabId: "1" },
+  // { tabName: "闪电试", tabId: "2" },
+  // { tabName: "家用电器", tabId: "3" },
+  // { tabName: "手机数码", tabId: "4" },
+  // { tabName: "电脑办公", tabId: "5" },
+  // { tabName: "家居家装", tabId: "6" },
+  // { tabName: "美妆护肤", tabId: "7" },
+  // { tabName: "服饰鞋包", tabId: "8" },
+  // { tabName: "母婴玩具", tabId: "9" },
+  // { tabName: "生鲜美食", tabId: "10" },
+  // { tabName: "图书音像", tabId: "11" },
+  // { tabName: "钟表奢品", tabId: "12" },
+  { tabName: "个人护理", tabId: "13" },
+  // { tabName: "家庭清洁", tabId: "14" },
+  // { tabName: "食品饮料", tabId: "15" },
+  // { tabName: "更多惊喜", tabId: "16" },
 ];
-let typeList = ["免费试用", "闪电试用"];
 let goodFilters =
-  "脚气@卷尺@种子@档案袋@癣@中年@老太太@妇女@私处@孕妇@卫生巾@卫生条@课@培训@阴道@生殖器@肛门@狐臭@少女内衣@胸罩@少女@女孩@鱼饵@童装@吊带@黑丝@钢圈@婴儿@儿童@玩具@幼儿@娃娃@网课@网校@电商@手机壳@钢化膜@车载充电器@网络课程@女纯棉@三角裤@美少女@纸尿裤@英语@俄语@四级@六级@四六级@在线网络@在线@阴道炎@宫颈@糜烂@打底裤@手机膜@鱼@狗@电话卡@门票@活动一@活动二@活动三@活动四@活动五@活动六@活动七@活动八@活动九@活动十@教育@看房@教程@软件@辅导@到店福利".split(
+  "脚气@卷尺@种子@档案袋@癣@中年@老太太@妇女@私处@孕妇@卫生巾@卫生条@课@培训@阴道@生殖器@肛门@狐臭@少女内衣@胸罩@少女@女孩@鱼饵@童装@吊带@黑丝@钢圈@婴儿@儿童@玩具@幼儿@娃娃@网课@网校@电商@手机壳@钢化膜@车载充电器@网络课程@女纯棉@三角裤@美少女@纸尿裤@英语@俄语@四级@六级@四六级@在线网络@在线@阴道炎@宫颈@糜烂@打底裤@手机膜@鱼@狗@电话卡@门票@活动一@活动二@活动三@活动四@活动五@活动六@活动七@活动八@活动九@活动十@教育@看房@教程@软件@辅导@到店福利@飞机杯@震动棒@自慰器".split(
     "@"
   );
-let minPrice = 201;
-
-const cidsMap = {
-  全部商品: "0",
-  家用电器: "737",
-  手机数码: "652,9987",
-  电脑办公: "670",
-  家居家装: "1620,6728,9847,9855,6196,15248,14065",
-  美妆护肤: "1316",
-  服饰鞋包: "1315,1672,1318,11729",
-  母婴玩具: "1319,6233",
-  生鲜美食: "12218",
-  图书音像: "1713,4051,4052,4053,7191,7192,5272",
-  钟表奢品: "5025,6144",
-  个人护理: "16750",
-  家庭清洁: "15901",
-  食品饮料: "1320,12259",
-  更多惊喜:
-    "4938,13314,6994,9192,12473,6196,5272,12379,13678,15083,15126,15980",
-};
-const typeMap = {
-  全部试用: "0",
-  免费试用: "1",
-  闪电试用: "3",
-  "30天试用": "5",
-};
+let minPrice = 201; // 最低价格
+let feedsList = []; // 所有试用商品
 
 !(async () => {
   await requireConfig();
@@ -82,6 +54,16 @@ const typeMap = {
     );
     return;
   }
+  // 获取列表
+  await try_tabList();
+  console.log(tabList);
+  if (tabList.length > 0) {
+    for (let i = 0; i < tabList.length; i++) {
+      await try_feedsList(tabList[i]);
+    }
+  }
+  await filterGoodList();
+
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
       cookie = cookiesArr[i];
@@ -113,13 +95,7 @@ const typeMap = {
         }
         continue;
       }
-
-      $.goodList = [];
       $.successList = [];
-      if (allGoodList.length == 0) {
-        await getGoodList();
-      }
-      await filterGoodList();
 
       $.totalTry = 0;
       $.totalGoods = $.goodList.length;
@@ -210,12 +186,120 @@ function requireConfig() {
   });
 }
 
-function getGoodListByCond(cids, page, pageSize, type, state) {
+function try_feedsList(tab, page = 1) {
   return new Promise((resolve, reject) => {
-    let option = taskurl(
-      `${selfdomain}/activity/list?pb=1&cids=${cids}&page=${page}&pageSize=${pageSize}&type=${type}&state=${state}`
-    );
+    const body = JSON.stringify({
+      tabId: `${tab.tabId}`,
+      page,
+      previewTime: "",
+    });
+    let option = taskGETUrl("newtry", "try_feedsList", body);
     delete option.headers["Cookie"];
+
+    $.get(option, async (err, resp, data) => {
+      if (err) {
+        console.log(`try_feedsList ${err}`);
+        reject(err);
+      }
+      data = JSON.parse(data);
+      if (data.success) {
+        console.log(`${tab.tabName}第${page}页获取成功`);
+        feedsList = feedsList.concat(data.data.feedList);
+
+        if (data.data.page * data.data.pageSize < data.data.total) {
+          await $.wait(6000);
+          resolve(await try_feedsList(tab, page + 1));
+        } else {
+          resolve();
+        }
+      }
+    });
+  });
+}
+
+async function filterGoodList() {
+  console.log(`⏰ 过滤商品列表，当前共有${feedsList.length}个商品`);
+  const now = Date.now();
+  const oneMoreDay = now + 24 * 60 * 60 * 1000;
+  $.goodList = feedsList.filter((good) => {
+    // 1. good 有问题
+    // 2. good 距离结束不到10min
+    // 3. good 距离结束时间超过2天，不然商品会太多
+    // 4. good 的结束时间大于一天
+    // 5. good 的价格小于最小的限制
+    if (
+      !good ||
+      good.endTime < now + 10 * 60 * 1000 ||
+      good.endTime > now + 2 * 24 * 60 * 60 * 1000 ||
+      good.endTime > oneMoreDay ||
+      good.jdPrice < minPrice
+    ) {
+      return false;
+    }
+    // 过滤种草
+    if (good.tagList && good.tagList.length !== 0) {
+      for (let itemTag of good.tagList) {
+        if (itemTag.tagType === 3) {
+          return false;
+        }
+      }
+    }
+    // 过滤名字
+    if (good.skuTitle && good.skuTitle.includes(goodFilters)) {
+      return false;
+    }
+    return true;
+  });
+  // console.log($.goodList);
+  console.log("执行优选商品价格从高到低进行排序");
+  $.goodList = $.goodList.sort((a, b) => {
+    return b.jdPrice - a.jdPrice;
+  });
+  console.log(`基础过滤排序完成，已筛选出${$.goodList.length}个商品`);
+}
+
+async function tryGoodList() {
+  console.log(`⏰ 即将申请 ${$.goodList.length} 个商品`);
+  $.running = true;
+  $.stopMsg = "申请完毕";
+
+  for (let i = 0; i < $.goodList.length && $.running; i++) {
+    let good = $.goodList[i];
+    const waitTime = generateRandomInteger(5000, 10000);
+    console.log(`随机等待${waitTime}秒后继续执行`);
+    await $.wait(waitTime);
+    await try_apply(good);
+  }
+}
+
+ const generateRandomInteger = (min, max = 0) => {
+   if (min > max) {
+     let temp = min;
+     min = max;
+     max = temp;
+   }
+   var Range = max - min;
+   var Rand = Math.random();
+   return Min + Math.round(Rand * Range);
+ };
+
+async function try_apply(good) {
+  console.log(
+    `尝试申请${good.skuTitle} 【价值￥${good.jdPrice}】【id为：${good.trialActivityId}】`
+  );
+  $.wait(6000)
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
+      activityId: good.trialActivityId,
+      previewTime: "",
+    });
+
+    let option = taskGETUrl("newtry", "try_apply", body);
+    option.headers["Origin"] = "https://pro.m.jd.com";
+    option.headers[
+      "Referer"
+    ] = `https://pro.m.jd.com/mall/active/3mpGVQDhvLsMvKfZZumWPQyWt83L/index.html?has_native=0&activityId=${good.trialActivityId}`;
+
     $.get(option, (err, resp, data) => {
       try {
         if (err) {
@@ -226,11 +310,57 @@ function getGoodListByCond(cids, page, pageSize, type, state) {
           );
         } else {
           data = JSON.parse(data);
-          if (data.success) {
-            $.totalPages = data.data.pages;
-            allGoodList = allGoodList.concat(data.data.data);
+          // console.log(data);
+          if (data.success && data.code === "1") {
+            $.totalTry += 1;
+            console.log(
+              `🥳 ${good.trialActivityId} 🛒${good.skuTitle}🛒 ${data.message}`
+            );
+          } else if (data.code == "-131") {
+            // 每日300个商品
+            $.stopMsg = data.message;
+            $.running = false;
           } else {
-            console.log(`💩 获得 ${cids} ${page} 列表失败: ${data.message}`);
+            console.log(
+              `🤬 ${good.trialActivityId} 🛒${
+                good.trialName
+              }🛒 ${JSON.stringify(data)}`
+            );
+          }
+          resolve();
+        }
+      } catch (e) {
+        reject(
+          `⚠️ ${arguments.callee.name.toString()} API返回结果解析出错\n${e}\n${JSON.stringify(
+            data
+          )}`
+        );
+      }
+    });
+  });
+}
+
+// 获取 try_tabList
+function try_tabList() {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
+      previewTime: "",
+    });
+    let option = taskGETUrl("newtry", "try_tabList", body);
+    $.get(option, (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(
+            `🚫 ${arguments.callee.name.toString()} API请求失败，请检查网络\n${JSON.stringify(
+              err
+            )}`
+          );
+        } else {
+          data = JSON.parse(data);
+          if (data.success) {
+            tabList = data.data.tabList;
+          } else {
+            console.log("获取失败", data);
           }
         }
       } catch (e) {
@@ -246,294 +376,42 @@ function getGoodListByCond(cids, page, pageSize, type, state) {
   });
 }
 
-async function getGoodList() {
-  if (cidsList.length === 0) cidsList.push("全部商品");
-  if (typeList.length === 0) typeList.push("全部试用");
-  for (let cidsKey of cidsList) {
-    for (let typeKey of typeList) {
-      if (!cidsMap.hasOwnProperty(cidsKey) || !typeMap.hasOwnProperty(typeKey))
-        continue;
-      console.log(`⏰ 获取 ${cidsKey} ${typeKey} 商品列表`);
-      $.totalPages = 1;
-      for (let page = 1; page <= $.totalPages; page++) {
-        await getGoodListByCond(
-          cidsMap[cidsKey],
-          page,
-          $.pageSize,
-          typeMap[typeKey],
-          "0"
-        );
-      }
-    }
-  }
-}
-
-async function filterGoodList() {
-  console.log(`⏰ 过滤商品列表，当前共有${allGoodList.length}个商品`);
-  const now = Date.now();
-  const oneMoreDay = now + 24 * 60 * 60 * 1000;
-  $.goodList = allGoodList.filter((good) => {
-    // 1. good 有问题
-    // 2. good 距离结束不到10min
-    // 3. good 的结束时间大于一天
-    // 4. good 的价格小于最小的限制
-    if (
-      !good ||
-      good.endTime < now + 10 * 60 * 1000 ||
-      good.endTime > oneMoreDay ||
-      good.jdPrice < minPrice
-    ) {
-      return false;
-    }
-    for (let item of goodFilters) {
-      if (good.trialName.indexOf(item) != -1) return false;
-    }
-    return true;
-  });
-  await getApplyStateByActivityIds();
-  $.goodList = $.goodList.sort((a, b) => {
-    return b.jdPrice - a.jdPrice;
-  });
-}
-
-async function getApplyStateByActivityIds() {
-  function opt(ids) {
-    return new Promise((resolve, reject) => {
-      $.get(
-        taskurl(
-          `${selfdomain}/getApplyStateByActivityIds?activityIds=${ids.join(
-            ","
-          )}`
-        ),
-        (err, resp, data) => {
-          try {
-            if (err) {
-              console.log(
-                `🚫 ${arguments.callee.name.toString()} API请求失败，请检查网路\n${JSON.stringify(
-                  err
-                )}`
-              );
-            } else {
-              data = JSON.parse(data);
-              ids.length = 0;
-              for (let apply of data) ids.push(apply.activityId);
-            }
-          } catch (e) {
-            reject(
-              `⚠️ ${arguments.callee.name.toString()} API返回结果解析出错\n${e}\n${JSON.stringify(
-                data
-              )}`
-            );
-          } finally {
-            $.goodList = $.goodList.filter((good) => {
-              for (let id of ids) {
-                if (id == good.id) {
-                  return false;
-                }
-              }
-              return true;
-            });
-            resolve();
-          }
-        }
-      );
-    });
-  }
-
-  let list = [];
-  for (let good of $.goodList) {
-    list.push(good.id);
-    if (list.length == $.pageSize) {
-      await opt(list);
-      list.length = 0;
-    }
-  }
-  if (list.length) await opt(list);
-}
-
-function canTry(good) {
-  return new Promise((resolve, reject) => {
-    let ret = false;
-    $.get(
-      taskurl(`${selfdomain}/activity?id=${good.id}`),
-      (err, resp, data) => {
-        try {
-          if (err) {
-            console.log(
-              `🚫 ${arguments.callee.name.toString()} API请求失败，请检查网路\n${JSON.stringify(
-                err
-              )}`
-            );
-          } else {
-            ret = data.indexOf("trySku") != -1;
-            let result = data.match(/"shopId":(\d+)/);
-            if (result) {
-              good.shopId = eval(result[1]);
-            }
-          }
-        } catch (e) {
-          reject(
-            `⚠️ ${arguments.callee.name.toString()} API返回结果解析出错\n${e}\n${JSON.stringify(
-              data
-            )}`
-          );
-        } finally {
-          resolve(ret);
-        }
-      }
-    );
-  });
-}
-
-function isFollowed(good) {
-  return new Promise((resolve, reject) => {
-    $.get(
-      taskurl(`${selfdomain}/isFollowed?id=${good.shopId}`, good.id),
-      (err, resp, data) => {
-        try {
-          if (err) {
-            console.log(
-              `🚫 ${arguments.callee.name.toString()} API请求失败，请检查网路\n${JSON.stringify(
-                err
-              )}`
-            );
-          } else {
-            data = JSON.parse(data);
-            resolve(data.success && data.data);
-          }
-        } catch (e) {
-          reject(
-            `⚠️ ${arguments.callee.name.toString()} API返回结果解析出错\n${e}\n${JSON.stringify(
-              data
-            )}`
-          );
-        } finally {
-          resolve(false);
-        }
-      }
-    );
-  });
-}
-
-function followShop(good) {
-  return new Promise((resolve, reject) => {
-    $.get(
-      taskurl(`${selfdomain}/followShop?id=${good.shopId}`, good.id),
-      (err, resp, data) => {
-        try {
-          if (err) {
-            console.log(
-              `🚫 ${arguments.callee.name.toString()} API请求失败，请检查网路\n${JSON.stringify(
-                err
-              )}`
-            );
-          } else {
-            data = JSON.parse(data);
-            if (data.code == "F0410") {
-              $.running = false;
-              $.stopMsg = data.msg || "关注数超过上限了哦~先清理下关注列表吧";
-            }
-            resolve(data.success && data.data);
-          }
-        } catch (e) {
-          reject(
-            `⚠️ ${arguments.callee.name.toString()} API返回结果解析出错\n${e}\n${JSON.stringify(
-              data
-            )}`
-          );
-        } finally {
-          resolve(false);
-        }
-      }
-    );
-  });
-}
-
-async function tryGoodList() {
-  console.log(`⏰ 即将申请 ${$.goodList.length} 个商品`);
-  $.running = true;
-  $.stopMsg = "申请完毕";
-  for (let i = 0; i < $.goodList.length && $.running; i++) {
-    let good = $.goodList[i];
-    if (!(await canTry(good))) continue;
-    // 如果没有关注且关注失败
-    if (good.shopId && !(await isFollowed(good)) && !(await followShop(good)))
-      continue;
-    // 两个申请间隔不能太短，放在下面有利于确保 follwShop 完成
-    await $.wait(5000);
-    // 关注完毕，即将试用
-    await doTry(good);
-  }
-}
-
-async function doTry(good) {
-  return new Promise((resolve, reject) => {
-    $.get(
-      taskurl(
-        `${selfdomain}/migrate/apply?activityId=${good.id}&source=1&_s=m`,
-        good.id
-      ),
-      (err, resp, data) => {
-        try {
-          if (err) {
-            console.log(
-              `🚫 ${arguments.callee.name.toString()} API请求失败，请检查网路\n${JSON.stringify(
-                err
-              )}`
-            );
-          } else {
-            data = JSON.parse(data);
-            if (data.success) {
-              $.totalTry += 1;
-              console.log(
-                `🥳 ${good.id} 🛒${good.trialName.substr(0, 15)}🛒 ${
-                  data.message
-                }`
-              );
-            } else if (data.code == "-131") {
-              // 每日300个商品
-              $.stopMsg = data.message;
-              $.running = false;
-            } else {
-              console.log(
-                `🤬 ${good.id} 🛒${good.trialName.substr(
-                  0,
-                  15
-                )}🛒 ${JSON.stringify(data)}`
-              );
-            }
-          }
-        } catch (e) {
-          reject(
-            `⚠️ ${arguments.callee.name.toString()} API返回结果解析出错\n${e}\n${JSON.stringify(
-              data
-            )}`
-          );
-        } finally {
-          resolve();
-        }
-      }
-    );
-  });
+function taskGETUrl(appid, functionId, body = JSON.stringify({})) {
+  return {
+    url: `https://api.m.jd.com/client.action?appid=${appid}&functionId=${functionId}&clientVersion=10.1.2&client=wh5&body=${encodeURIComponent(
+      body
+    )}`,
+    headers: {
+      Host: "api.m.jd.com",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Language": "zh-cn",
+      Cookie: cookie,
+      Origin: "https://prodev.m.jd.com",
+      Connection: "keep-alive",
+      "Content-Type": "application/x-www-form-urlencoded",
+      UserAgent:
+        "jdapp;iPhone;10.1.2;14.7.1;e012d4d2bdbd153538afedc564b6ef59fce3e0d2;network/wifi;model/iPhone12,1;addressid/0;appBuild/167802;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1",
+      "Accept-Language": "zh-cn",
+      "Accept-Encoding": "gzip, deflate, br",
+      Accept: "application/json, text/plain, */*",
+      Referer: `https://prodev.m.jd.com/mall/active/3mpGVQDhvLsMvKfZZumWPQyWt83L/index.html?activityId=${
+        JSON.parse(body).activityId
+      }&tttparams=oNnzSixJeyJnTG5nIjoiMTE4LjcxNzY3NSIsImdMYXQiOiIzMS45ODkxNDIifQ8%3D%3D&un_area=12_904_3376_57874&lng=118.7176193562527&lat=31.98916265951646`,
+    },
+  };
 }
 
 async function getSuccessList() {
   // 一页12个商品，不会吧不会吧，不会有人一次性中奖12个商品吧？！🤔
   return new Promise((resolve, reject) => {
-    const option = {
-      url: `https://try.jd.com/my/tryList?selected=2&page=1&tryVersion=2&_s=m`,
-      headers: {
-        Host: "try.jd.com",
-        Connection: "keep-alive",
-        UserAgent:
-          "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
-        Accept: "*/*",
-        Referer: "https://try.m.jd.com/",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "zh,zh-CN;q=0.9,en;q=0.8",
-        Cookie: cookie,
-      },
-    };
+    const body = JSON.stringify({
+      page: 1,
+      selected: 2, // 1 - 已申请 2 - 成功列表，3 - 失败列表
+      previewTime: "",
+    });
+    let option = taskGETUrl("newtry", "try_MyTrials", body);
+    option.headers.Referer = "https://pro.m.jd.com/";
+
     $.get(option, (err, resp, data) => {
       try {
         if (err) {
@@ -545,7 +423,7 @@ async function getSuccessList() {
         } else {
           data = JSON.parse(data);
           if (data.success && data.data) {
-            $.successList = data.data.data.filter((item) => {
+            $.successList = data.data.list.filter((item) => {
               return item.text.text.indexOf("请尽快领取") != -1;
             });
           } else {
@@ -573,7 +451,7 @@ async function showMsg() {
   }个商品待领取🤩\n🎉 结束原因：${$.stopMsg}`;
   if (!jdNotify || jdNotify === "false") {
     $.msg($.name, ``, message, {
-      "open-url": "https://try.m.jd.com/user",
+      "open-url": "https://try.jd.com/user",
     });
     if ($.isNode()) {
       // notifyMsg += `${message}\n\n`;
@@ -588,17 +466,15 @@ function taskurl(url, goodId) {
   return {
     url: url,
     headers: {
-      Host: "try.m.jd.com",
+      Host: "try.jd.com",
       "Accept-Encoding": "gzip, deflate, br",
       Cookie: cookie,
       Connection: "keep-alive",
       Accept: "*/*",
-      UserAgent:
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
-      "Accept-Language": "zh-cn",
-      Referer: goodId
-        ? `https://try.m.jd.com/activity/?id=${goodId}`
-        : undefined,
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+      "Accept-Language": "zh-CN,zh;q=0.9",
+      Referer: goodId ? `https://try.jd.com/${goodId}.html` : undefined,
     },
   };
 }
@@ -1118,6 +994,7 @@ function Env(name, opts) {
         );
       }
     }
+
     /**
      *
      * 示例:$.time('yyyy-MM-dd qq HH:mm:ss.S')
